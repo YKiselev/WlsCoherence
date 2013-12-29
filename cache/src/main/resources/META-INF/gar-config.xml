@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!--<database>-->
+        <!--<url>jdbc:oracle:thin:@Silent:1521:XE</url>-->
+        <!--<driver>oracle.jdbc.OracleDriver</driver>-->
+        <!--<username>test2</username>-->
+        <!--<password>test2</password>-->
+        <!--<validationQuery>SELECT 1 FROM DUAL</validationQuery>-->
+    <!--</database>-->
+
+    <stores>
+        <Users>
+            <class>org.test.stores.UserCacheStore</class>
+        </Users>
+    </stores>
+</configuration>

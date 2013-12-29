@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coherence-application xmlns="http://xmlns.oracle.com/weblogic/coherence-application">
+    <application-lifecycle-listener>
+        <class-name>org.test.listener.AppLifecycleListener</class-name>
+    </application-lifecycle-listener>
+
+    <cache-configuration-ref>META-INF/gar-cache-config.xml</cache-configuration-ref>
+    <pof-configuration-ref>cache-api-pof-config.xml</pof-configuration-ref>
+</coherence-application>
