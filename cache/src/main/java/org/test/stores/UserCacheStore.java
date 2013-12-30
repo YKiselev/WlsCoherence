@@ -1,60 +1,50 @@
 package org.test.stores;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.RowMapper;
+import org.test.mappers.SimpleRowMapper;
 import org.test.mappers.UserRowMapper;
 import org.test.pof.UserPO;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Юрий on 10.12.13.
  */
 public class UserCacheStore extends JdbcCacheStore<Long, UserPO> {
 
+    private static final ColumnInfo[] COLUMN_INFOS = new ColumnInfo[]{
+            new ColumnInfo("Id", Flag.PK, Flag.INSERTABLE),
+            new ColumnInfo("FirstName"),
+            new ColumnInfo("LastName"),
+            new ColumnInfo("MiddleName"),
+            new ColumnInfo("Login"),
+            new ColumnInfo("AddressLine1"),
+            new ColumnInfo("AddressLine2"),
+            new ColumnInfo("PostIndex"),
+            new ColumnInfo("Phone1"),
+            new ColumnInfo("Created", Flag.INSERTABLE),
+            new ColumnInfo("Updated", Flag.UPDATEABLE),
+    };
+
     @Override
-    protected String getMergeQuery() {
-        return "MERGE INTO Users\n" +
-                "USING DUAL ON (Id = :id)\n" +
-                "WHEN MATCHED THEN\n" +
-                "  UPDATE SET FirstName = :firstName,\n" +
-                "  LastName = :lastName,\n" +
-                "  MiddleName = :middleName,\n" +
-                "  Login = :login,\n" +
-                "  AddressLine1 = :addressLine1,\n" +
-                "  AddressLine2 = :addressLine2,\n" +
-                "  PostIndex = :postIndex,\n" +
-                "  Phone1 = :phone1,\n" +
-                "  Updated = :updated\n" +
-                "WHEN NOT MATCHED THEN\n" +
-                "  INSERT (Id,FirstName,LastName,MiddleName,Login,AddressLine1,AddressLine2,PostIndex,Phone1,Created)" +
-                "  VALUES (:id,:firstName,:lastName,:middleName,:login, :addressLine1, :addressLine2, :postIndex, :phone1, :created)";
+    protected RowMapper<UserPO> getRowMapper() {
+        return new UserRowMapper();
     }
 
-//    @Override
-//    protected String getDeleteQuery() {
-//        return "DELETE FROM Users WHERE Id = :longValue";
-//    }
+    @Override
+    protected RowMapper<Long> getKeyRowMapper() {
+        return new SimpleRowMapper<Long>();
+    }
 
     @Override
-    protected List<UserPO> selectBatch(Collection<Long> keys) {
-        final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-        paramSource.addValue("Ids", keys);
-        return getTemplate().query("SELECT * FROM Users WHERE Id IN (:Ids)", paramSource, new UserRowMapper());
+    protected Object[] decomposeKey(Long key) {
+        return new Object[]{key};
+    }
+
+    public UserCacheStore() {
+        super("Users", COLUMN_INFOS);
     }
 
     @Override
     protected Long getKey(UserPO value) {
         return value.getId();
-    }
-
-    @Override
-    protected void eraseBatch(Collection<Long> keys) {
-        final List<Object[]> batchArgs = new ArrayList<Object[]>();
-        for (Long key : keys) {
-            batchArgs.add(new Object[]{key});
-        }
-        getTemplate().getJdbcOperations().batchUpdate("DELETE FROM Users WHERE Id = ?", batchArgs);
     }
 }
