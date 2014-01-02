@@ -1,6 +1,7 @@
 package org.test.stores;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.test.mappers.LongRowMapper;
 import org.test.mappers.SimpleRowMapper;
 import org.test.mappers.UserRowMapper;
 import org.test.pof.UserPO;
@@ -31,7 +32,7 @@ public class UserCacheStore extends JdbcCacheStore<Long, UserPO> {
 
     @Override
     protected RowMapper<Long> getKeyRowMapper() {
-        return new SimpleRowMapper<Long>();
+        return new LongRowMapper();
     }
 
     @Override

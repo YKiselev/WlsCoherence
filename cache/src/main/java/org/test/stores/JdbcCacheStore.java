@@ -1,21 +1,21 @@
 package org.test.stores;
 
 import com.tangosol.net.cache.CacheStore;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchUpdateUtils;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
+import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -27,12 +27,12 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
     private final DataSource dataSource;
     private final int maxBatchSize;
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final String insertQuery;
-    private final String updateQuery;
+    private final ParsedSql insertQuery;
+    private final ParsedSql updateQuery;
     private final String deleteQuery;
     private final String selectQuery;
     private final String selectKeysQuery;
-    private final TransactionTemplate txTemplate;
+    private final PlatformTransactionManager txManager;
 
     protected abstract RowMapper<V> getRowMapper();
 
@@ -44,20 +44,19 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
 
     public JdbcCacheStore(String tableName, ColumnInfo[] columnInfos) {
         this.tableName = tableName;
-        try {
-            Context ctx = new InitialContext();
-            this.dataSource = (DataSource) ctx.lookup("jdbc/cacheDS");
-        } catch (NamingException ex) {
-            throw new RuntimeException(ex);
-        }
+        this.dataSource = DataSourceFactory.getDataSource();
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.maxBatchSize = 100;
-        this.insertQuery = QueryUtils.buildInsertQuery(tableName, columnInfos);
-        this.updateQuery = QueryUtils.buildUpdateQuery(tableName, columnInfos);
-        this.deleteQuery = QueryUtils.buildDeleteQuery(tableName, columnInfos);
-        this.selectQuery = QueryUtils.buildSelectQuery(tableName, columnInfos);
-        this.selectKeysQuery = QueryUtils.buildSelectKeysQuery(tableName, columnInfos);
-        this.txTemplate = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
+
+        final QueryBuilder queryBuilder = new QueryBuilder(tableName, columnInfos);
+
+        this.insertQuery = NamedParameterUtils.parseSqlStatement(queryBuilder.buildInsertQuery());
+        this.updateQuery = NamedParameterUtils.parseSqlStatement(queryBuilder.buildUpdateQuery());
+        this.deleteQuery = queryBuilder.buildDeleteQuery();
+        this.selectQuery = queryBuilder.buildSelectQuery();
+        this.selectKeysQuery = queryBuilder.buildSelectKeysQuery();
+
+        this.txManager = new DataSourceTransactionManager(dataSource);
     }
 
     private int getMaxBatchSize() {
@@ -65,60 +64,82 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
     }
 
     protected NamedParameterJdbcTemplate getTemplate() {
-        return new NamedParameterJdbcTemplate(dataSource);// jdbcTemplate;
+        return jdbcTemplate;
+    }
+
+    private TransactionStatus getTransaction() {
+        DefaultTransactionDefinition dtd = new DefaultTransactionDefinition();
+        dtd.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        return txManager.getTransaction(dtd);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void store(Object key, Object value) {
-        storeBatch(Collections.singletonMap((K) key, (V) value));
+        TransactionStatus ts = getTransaction();
+        try {
+            SqlParameterSource ps = new BeanPropertySqlParameterSource(value);
+            final int updateCount = getTemplate().update(updateQuery.toString(), ps);
+            if (updateCount != 1) {
+                final int insertCount = getTemplate().update(insertQuery.toString(), ps);
+                if (updateCount + insertCount != 1) {
+                    throw new RuntimeException("Store operation failed for key " + key);
+                }
+            }
+            txManager.commit(ts);
+        } catch (RuntimeException ex) {
+            txManager.rollback(ts);
+            throw ex;
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void storeAll(Map map) {
-        final Map map2 = map;
-        txTemplate.execute(new TransactionCallback<Object>() {
-            @Override
-            public Object doInTransaction(TransactionStatus transactionStatus) {
-                final int batchSize = getMaxBatchSize();
-                if (batchSize == 0 || batchSize >= map2.size()) {
-                    storeBatch(map2);
-                } else {
-                    final Map<K, V> batch = new HashMap<K, V>(batchSize);
-                    while (!map2.isEmpty()) {
-                        final Iterator<Map.Entry<K, V>> it = map2.entrySet().iterator();
-                        while (it.hasNext() && batch.size() < batchSize) {
-                            Map.Entry<K, V> entry = it.next();
-                            batch.put(entry.getKey(), entry.getValue());
-                            it.remove();
-                        }
+        TransactionStatus ts = getTransaction();
+        try {
+            final int batchSize = getMaxBatchSize();
+            if (batchSize == 0 || batchSize >= map.size()) {
+                storeBatch(map);
+            } else {
+                final Map<K, V> batch = new HashMap<K, V>(batchSize);
+                while (!map.isEmpty()) {
+                    final Iterator<Map.Entry<K, V>> it = map.entrySet().iterator();
+                    while (it.hasNext() && batch.size() < batchSize) {
+                        Map.Entry<K, V> entry = it.next();
+                        batch.put(entry.getKey(), entry.getValue());
+                        it.remove();
+                    }
 
-                        if (!batch.isEmpty()) {
-                            storeBatch(batch);
-                            batch.clear();
-                        }
+                    if (!batch.isEmpty()) {
+                        storeBatch(batch);
+                        batch.clear();
                     }
                 }
-                return null;
             }
-        });
+            txManager.commit(ts);
+        } catch (RuntimeException ex) {
+            txManager.rollback(ts);
+            throw ex;
+        }
+    }
+
+    private int batchUpdate(ParsedSql parsedSql, SqlParameterSource[] batchArgs) {
+        if (batchArgs.length <= 0) {
+            return 0;
+        }
+        final String sqlToUse = NamedParameterUtils.substituteNamedParameters(parsedSql, batchArgs[0]);
+        return getTemplate().getJdbcOperations().execute(sqlToUse, new BatchCallback(parsedSql, batchArgs));
     }
 
     private void storeBatch(Map<K, V> map) {
         final SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(map.values().toArray());
-        final int[] result = getTemplate().batchUpdate(updateQuery, batch);
-        int updateCount = result[0];
-        if (updateCount == Statement.SUCCESS_NO_INFO) {
-            updateCount = batch.length;
-        } else if (updateCount == Statement.EXECUTE_FAILED) {
-            updateCount = 0;
-        }
+        final int updateCount = batchUpdate(updateQuery, batch);
         if (updateCount < batch.length) {
             Map<K, V> insertMap = map;
             if (updateCount > 0) {
                 final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-                paramSource.addValue(QueryUtils.PARAM_PRIMARY_KEY_BATCH, map.keySet());
+                paramSource.addValue(QueryBuilder.PARAM_PRIMARY_KEY_BATCH, map.keySet());
                 final List<K> existingKeys = getTemplate().query(selectKeysQuery, paramSource, getKeyRowMapper());
                 insertMap = new HashMap<K, V>(map);
 
@@ -127,12 +148,11 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
             }
 
             final SqlParameterSource[] insertBatch = SqlParameterSourceUtils.createBatch(insertMap.values().toArray());
-            final int[] insertResult = getTemplate().batchUpdate(insertQuery, insertBatch);
-            final int insertCount = insertResult[0];
+            final int insertCount = batchUpdate(insertQuery, insertBatch);
 
-            if (updateCount + insertCount < batch.length) {
+            if (updateCount + insertCount != batch.length) {
                 throw new RuntimeException("\"" + tableName + "\": Incomplete store: " + updateCount +
-                        " update(s) + " + insertCount + " insert(s) < " + batch.length + " total batch size");
+                        " update(s) + " + insertCount + " insert(s) != " + batch.length + " (total batch size)");
             }
         }
     }
@@ -140,29 +160,36 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
     @Override
     @SuppressWarnings("unchecked")
     public void erase(Object key) {
-        eraseBatch(Collections.singletonList((K) key));
+        getTemplate().getJdbcOperations().update(deleteQuery, decomposeKey((K) key));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void eraseAll(Collection collection) {
-        final int batchSize = getMaxBatchSize();
-        if (batchSize == 0 || batchSize >= collection.size()) {
-            eraseBatch(collection);
-        } else {
-            final List<K> batch = new ArrayList<K>(batchSize);
-            while (!collection.isEmpty()) {
-                final Iterator<K> it = collection.iterator();
-                while (it.hasNext() && batch.size() < batchSize) {
-                    batch.add(it.next());
-                    it.remove();
-                }
+        TransactionStatus ts = getTransaction();
+        try {
+            final int batchSize = getMaxBatchSize();
+            if (batchSize == 0 || batchSize >= collection.size()) {
+                eraseBatch(collection);
+            } else {
+                final List<K> batch = new ArrayList<K>(batchSize);
+                while (!collection.isEmpty()) {
+                    final Iterator<K> it = collection.iterator();
+                    while (it.hasNext() && batch.size() < batchSize) {
+                        batch.add(it.next());
+                        it.remove();
+                    }
 
-                if (!batch.isEmpty()) {
-                    eraseBatch(batch);
-                    batch.clear();
+                    if (!batch.isEmpty()) {
+                        eraseBatch(batch);
+                        batch.clear();
+                    }
                 }
             }
+            txManager.commit(ts);
+        } catch (RuntimeException ex) {
+            txManager.rollback(ts);
+            throw ex;
         }
     }
 
@@ -207,8 +234,10 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
         return result;
     }
 
-    private Map<K, V> loadBatch(Collection<K> keys) {
-        final List<V> rows = selectBatch(keys);
+    protected Map<K, V> loadBatch(Collection<K> keys) {
+        final MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue(QueryBuilder.PARAM_PRIMARY_KEY_BATCH, keys);
+        final List<V> rows = getTemplate().query(selectQuery, paramSource, getRowMapper());
         final Map<K, V> result = new HashMap<K, V>(rows.size());
         for (V value : rows) {
             result.put(getKey(value), value);
@@ -216,16 +245,16 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
         return result;
     }
 
-    protected List<V> selectBatch(Collection<K> keys) {
-        final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-        paramSource.addValue(QueryUtils.PARAM_PRIMARY_KEY_BATCH, keys);
-        return getTemplate().query(selectQuery, paramSource, getRowMapper());
-    }
-
+    /**
+     * Column flags enum
+     */
     public enum Flag {
         PK, INSERTABLE, UPDATEABLE
     }
 
+    /**
+     * ColumnInfo class
+     */
     public static class ColumnInfo {
 
         private final String tableColumnName;
@@ -268,6 +297,55 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
 
         public ColumnInfo(String tableColumnName) {
             this(tableColumnName, Flag.INSERTABLE, Flag.UPDATEABLE);
+        }
+    }
+
+    /**
+     * Batch prepared statement callback
+     */
+    static class BatchCallback extends BatchUpdateUtils implements PreparedStatementCallback<Integer> {
+
+        private final ParsedSql parsedSql;
+        private final SqlParameterSource[] batchArgs;
+
+        BatchCallback(ParsedSql parsedSql, SqlParameterSource[] batchArgs) {
+            this.parsedSql = parsedSql;
+            this.batchArgs = batchArgs;
+        }
+
+        private void setValues(PreparedStatement ps, int i) throws SQLException {
+            Object[] values = NamedParameterUtils.buildValueArray(parsedSql, batchArgs[i], null);
+            int[] columnTypes = NamedParameterUtils.buildSqlTypeArray(parsedSql, batchArgs[i]);
+            setStatementParameters(values, ps, columnTypes);
+        }
+
+        @Override
+        public Integer doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+            final int batchSize = batchArgs.length;
+            int result = 0;
+            if (JdbcUtils.supportsBatchUpdates(ps.getConnection())) {
+                for (int i = 0; i < batchSize; i++) {
+                    setValues(ps, i);
+                    ps.addBatch();
+                }
+                int[] batchResult = ps.executeBatch();
+                for (int i = batchResult.length - 1; i >= 0; i--) {
+                    int value = batchResult[i];
+                    // workaround for Oracle driver not JDBC-compliant
+                    if (value < 0) {
+                        result = ps.getUpdateCount();
+                        break;
+                    }
+                    result += value;
+                }
+            } else {
+                for (int i = 0; i < batchSize; i++) {
+                    setValues(ps, i);
+                    result += ps.executeUpdate();
+                }
+            }
+
+            return result;
         }
     }
 }
