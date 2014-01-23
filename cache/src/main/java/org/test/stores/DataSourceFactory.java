@@ -31,6 +31,7 @@ public final class DataSourceFactory {
                     Context ctx = new InitialContext();
                     ds = (DataSource) ctx.lookup(jndiName);
                 } catch (NamingException ex) {
+                    ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
             } else {

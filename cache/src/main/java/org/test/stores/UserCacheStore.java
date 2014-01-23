@@ -21,8 +21,8 @@ public class UserCacheStore extends JdbcCacheStore<Long, UserPO> {
             new ColumnInfo("AddressLine2"),
             new ColumnInfo("PostIndex"),
             new ColumnInfo("Phone1"),
-            new ColumnInfo("Created", Flag.INSERTABLE),
-            new ColumnInfo("Updated", Flag.UPDATEABLE),
+            new ColumnInfo("CreatedAt", "created", Flag.INSERTABLE),
+            new ColumnInfo("UpdatedAt", "updated", Flag.UPDATEABLE),
     };
 
     @Override

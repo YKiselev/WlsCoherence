@@ -10,7 +10,7 @@
     <caching-scheme-mapping>
         <cache-mapping>
             <cache-name>Users</cache-name>
-            <scheme-name>near</scheme-name>
+            <scheme-name>distributed-db-backed</scheme-name>
         </cache-mapping>
 
     </caching-scheme-mapping>
@@ -63,10 +63,23 @@
             <autostart>true</autostart>
         </distributed-scheme>
 
+        <invocation-scheme>
+            <scheme-name>invocation-service</scheme-name>
+            <service-name>ExtendTcpInvocationService</service-name>
+            <thread-count>2</thread-count>
+            <autostart>true</autostart>
+        </invocation-scheme>
+
         <proxy-scheme>
             <!--<scheme-name>proxy-1</scheme-name>-->
             <service-name>TcpProxyService</service-name>
-            <acceptor-config/>
+            <acceptor-config>
+                <tcp-acceptor>
+                    <local-address>
+                        <port>27600</port>
+                    </local-address>
+                </tcp-acceptor>
+            </acceptor-config>
             <proxy-config>
                 <cache-service-proxy>
                     <enabled>true</enabled>

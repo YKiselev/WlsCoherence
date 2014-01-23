@@ -48,14 +48,37 @@
             <service-name>TcpProxyService</service-name>
             <initiator-config>
                 <tcp-initiator>
-                    <name-service-addresses>
+                    <remote-addresses>
                         <socket-address>
-                            <address>192.168.2.1</address>
-                            <port>27500</port>
+                            <address>10.249.132.204</address>
+                            <port>27600</port>
                         </socket-address>
-                    </name-service-addresses>
+                    </remote-addresses>
                 </tcp-initiator>
+                <outgoing-message-handler>
+                    <request-timeout>5s</request-timeout>
+                </outgoing-message-handler>
+                <connect-timeout>10s</connect-timeout>
             </initiator-config>
         </remote-cache-scheme>
+
+        <remote-invocation-scheme>
+            <scheme-name>extend-invocation</scheme-name>
+            <service-name>ExtendTcpInvocationService</service-name>
+            <initiator-config>
+                <tcp-initiator>
+                    <remote-addresses>
+                        <socket-address>
+                            <address>10.249.132.204</address>
+                            <port>27600</port>
+                        </socket-address>
+                    </remote-addresses>
+                </tcp-initiator>
+                <outgoing-message-handler>
+                    <request-timeout>5s</request-timeout>
+                </outgoing-message-handler>
+                <connect-timeout>10s</connect-timeout>
+            </initiator-config>
+        </remote-invocation-scheme>
     </caching-schemes>
 </cache-config>
