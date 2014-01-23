@@ -29,19 +29,8 @@
                 <remote-cache-scheme>
                     <scheme-ref>extend-dist</scheme-ref>
                 </remote-cache-scheme>
-                <!--<distributed-scheme>-->
-                    <!--<scheme-ref>distributed-db-backed</scheme-ref>-->
-                <!--</distributed-scheme>-->
             </back-scheme>
         </near-scheme>
-
-        <!--     DB Backed Distributed caching scheme.    -->
-        <!--<distributed-scheme>-->
-            <!--<scheme-name>distributed-db-backed</scheme-name>-->
-            <!--<service-name>DistributedCache</service-name>-->
-            <!--<serializer>pof</serializer>-->
-            <!--<autostart>false</autostart>-->
-        <!--</distributed-scheme>-->
 
         <remote-cache-scheme>
             <scheme-name>extend-dist</scheme-name>
@@ -62,23 +51,23 @@
             </initiator-config>
         </remote-cache-scheme>
 
-        <!--<remote-invocation-scheme>-->
-            <!--<scheme-name>extend-invocation</scheme-name>-->
-            <!--<service-name>ExtendTcpInvocationService</service-name>-->
-            <!--<initiator-config>-->
-                <!--<tcp-initiator>-->
-                    <!--<remote-addresses>-->
-                        <!--<socket-address>-->
-                            <!--<address>silent</address>-->
-                            <!--<port>27600</port>-->
-                        <!--</socket-address>-->
-                    <!--</remote-addresses>-->
-                    <!--<connect-timeout>10s</connect-timeout>-->
-                <!--</tcp-initiator>-->
-                <!--<outgoing-message-handler>-->
-                    <!--<request-timeout>5s</request-timeout>-->
-                <!--</outgoing-message-handler>-->
-            <!--</initiator-config>-->
-        <!--</remote-invocation-scheme>-->
+        <remote-invocation-scheme>
+            <scheme-name>extend-invocation</scheme-name>
+            <service-name>ExtendTcpInvocationService</service-name>
+            <initiator-config>
+                <tcp-initiator>
+                    <remote-addresses>
+                        <socket-address>
+                            <address>10.249.132.204</address>
+                            <port>27600</port>
+                        </socket-address>
+                    </remote-addresses>
+                </tcp-initiator>
+                <outgoing-message-handler>
+                    <request-timeout>5s</request-timeout>
+                </outgoing-message-handler>
+                <connect-timeout>10s</connect-timeout>
+            </initiator-config>
+        </remote-invocation-scheme>
     </caching-schemes>
 </cache-config>

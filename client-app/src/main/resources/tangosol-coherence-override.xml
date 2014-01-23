@@ -3,30 +3,34 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://xmlns.oracle.com/coherence/coherence-cache-config/1.2/coherence-operational-config.xsd">
 
-    <cluster-config>
-        <member-identity>
-            <cluster-name system-property="tangosol.coherence.cluster">Coherence-0</cluster-name>
-            <role-name>CoherenceAppNode</role-name>
-        </member-identity>
+    <!--<cluster-config>-->
+        <!--<member-identity>-->
+            <!--<cluster-name system-property="tangosol.coherence.cluster">Coherence-0</cluster-name>-->
+            <!--<role-name>CoherenceAppNode</role-name>-->
+        <!--</member-identity>-->
 
-        <unicast-listener>
+        <!--<unicast-listener>-->
             <!--<well-known-addresses>-->
                 <!--<socket-address id="1">-->
-                    <!--<address>silent</address>-->
+                    <!--<address>tdsfwl1</address>-->
+                    <!--<port>27500</port>-->
+                <!--</socket-address>-->
+                <!--<socket-address id="2">-->
+                    <!--<address>tdsfwl2</address>-->
                     <!--<port>27500</port>-->
                 <!--</socket-address>-->
             <!--</well-known-addresses>-->
-            <address system-property="tangosol.coherence.localhost">silent</address>
-            <port system-property="tangosol.coherence.localport">27500</port>
-        </unicast-listener>
+            <!--&lt;!&ndash;<address system-property="tangosol.coherence.localhost">10.249.132.204</address>&ndash;&gt;-->
+            <!--&lt;!&ndash;<port system-property="tangosol.coherence.localport">27501</port>&ndash;&gt;-->
+        <!--</unicast-listener>-->
 
-        <multicast-listener>
-            <address>234.1.1.5</address>
-            <port>33387</port>
-            <time-to-live>5</time-to-live>
-            <join-timeout-milliseconds>15000</join-timeout-milliseconds>
-        </multicast-listener>
-    </cluster-config>
+        <!--<multicast-listener>-->
+            <!--<address>234.1.1.5</address>-->
+            <!--<port>33387</port>-->
+            <!--<time-to-live>5</time-to-live>-->
+            <!--<join-timeout-milliseconds>15000</join-timeout-milliseconds>-->
+        <!--</multicast-listener>-->
+    <!--</cluster-config>-->
 
     <logging-config>
         <severity-level system-property="tangosol.coherence.log.level">5</severity-level>
