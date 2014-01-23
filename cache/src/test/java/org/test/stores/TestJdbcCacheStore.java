@@ -119,6 +119,7 @@ public class TestJdbcCacheStore {
     }
 
     @Test
+    @Ignore
     public void testMain() throws Exception {
         NamedCache cache = CacheFactory.getCache("Users");
         while (true) {

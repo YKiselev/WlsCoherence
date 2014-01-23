@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <dataSourceFactory>
-        <jndiName>jdbc/cacheDS</jndiName>
+        <!--<jndiName>jdbc/cacheDS</jndiName>-->
+
+        <dataSource>
+            <url>jdbc:oracle:thin:@Silent:1521:XE</url>
+            <driver>oracle.jdbc.OracleDriver</driver>
+            <username>test2</username>
+            <password>test2</password>
+            <validationQuery>SELECT 1 FROM DUAL</validationQuery>
+        </dataSource>
+
     </dataSourceFactory>
+
 
     <stores>
         <Users>

@@ -19,9 +19,9 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        //testCache();
+        testCache();
 
-        testInvocable();
+        //testInvocable();
     }
 
     private static void testCache() {
@@ -83,14 +83,5 @@ public class ClientApp {
         InvocationService invocationService = (InvocationService) CacheFactory.getService("ExtendTcpInvocationService");
         Map result = invocationService.query(new MyInvocable1(), null);
         System.out.println("Result of invocation: " + result);
-//        long t0 = System.nanoTime();
-//        while (System.nanoTime() - t0 < 5L * 1000L * 1000000L) {
-//            try {
-//                Thread.sleep(20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//                break;
-//            }
-//        }
     }
 }

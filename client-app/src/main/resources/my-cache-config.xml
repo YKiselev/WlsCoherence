@@ -58,7 +58,7 @@
                 <tcp-initiator>
                     <remote-addresses>
                         <socket-address>
-                            <address>10.249.132.204</address>
+                            <address>silent</address>
                             <port>27600</port>
                         </socket-address>
                     </remote-addresses>

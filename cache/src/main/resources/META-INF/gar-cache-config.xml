@@ -10,7 +10,7 @@
     <caching-scheme-mapping>
         <cache-mapping>
             <cache-name>Users</cache-name>
-            <scheme-name>distributed-db-backed</scheme-name>
+            <scheme-name>users</scheme-name>
         </cache-mapping>
 
     </caching-scheme-mapping>
@@ -33,15 +33,31 @@
 
         <!--     DB Backed Distributed caching scheme.    -->
         <distributed-scheme>
-            <scheme-name>distributed-db-backed</scheme-name>
-            <service-name>DistributedCache</service-name>
-            <serializer>pof</serializer>
+            <scheme-name>users</scheme-name>
+            <scheme-ref>distributed-jdbc-backed</scheme-ref>
             <backing-map-scheme>
                 <read-write-backing-map-scheme>
                     <internal-cache-scheme>
                         <local-scheme>
                             <high-units>1000</high-units>
                             <expiry-delay>5m</expiry-delay>
+                        </local-scheme>
+                    </internal-cache-scheme>
+                </read-write-backing-map-scheme>
+            </backing-map-scheme>
+        </distributed-scheme>
+
+        <!--   Template: JDBC backed distributed scheme   -->
+        <distributed-scheme>
+            <scheme-name>distributed-jdbc-backed</scheme-name>
+            <service-name>DistributedCache</service-name>
+            <serializer>pof</serializer>
+            <backing-map-scheme>
+                <read-write-backing-map-scheme>
+                    <internal-cache-scheme>
+                        <local-scheme>
+                            <high-units>200</high-units>
+                            <expiry-delay>1m</expiry-delay>
                         </local-scheme>
                     </internal-cache-scheme>
                     <cachestore-scheme>
@@ -63,12 +79,12 @@
             <autostart>true</autostart>
         </distributed-scheme>
 
-        <invocation-scheme>
-            <scheme-name>invocation-service</scheme-name>
-            <service-name>ExtendTcpInvocationService</service-name>
-            <thread-count>2</thread-count>
-            <autostart>true</autostart>
-        </invocation-scheme>
+        <!--<invocation-scheme>-->
+            <!--<scheme-name>invocation-service</scheme-name>-->
+            <!--<service-name>ExtendTcpInvocationService</service-name>-->
+            <!--<thread-count>2</thread-count>-->
+            <!--<autostart>true</autostart>-->
+        <!--</invocation-scheme>-->
 
         <proxy-scheme>
             <service-name>ExtendTcpProxyService</service-name>
@@ -86,7 +102,7 @@
                     <enabled>true</enabled>
                 </cache-service-proxy>
                 <invocation-service-proxy>
-                    <enabled>true</enabled>
+                    <enabled>false</enabled>
                 </invocation-service-proxy>
             </proxy-config>
             <autostart>true</autostart>
