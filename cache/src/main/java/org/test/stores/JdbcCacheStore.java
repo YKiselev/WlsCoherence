@@ -204,7 +204,8 @@ public abstract class JdbcCacheStore<K, V> implements CacheStore {
     @Override
     @SuppressWarnings("unchecked")
     public Object load(Object key) {
-        return loadBatch(Collections.singletonList((K) key));
+        Map<K, V> map = loadBatch(Collections.singletonList((K) key));
+        return map.get(key);
     }
 
     @Override

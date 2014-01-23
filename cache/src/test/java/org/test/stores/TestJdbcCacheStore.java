@@ -50,7 +50,7 @@ public class TestJdbcCacheStore {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testStore() throws Exception {
         for (Map.Entry<Long, UserPO> entry : users.entrySet()) {
             cacheStore.store(entry.getKey(), entry.getValue());
@@ -64,14 +64,14 @@ public class TestJdbcCacheStore {
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testErase() throws Exception {
         cacheStore.store(1L, users.get(1L));
         cacheStore.erase(1L);
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void testEraseAll() throws Exception {
         cacheStore.storeAll(users);
         cacheStore.eraseAll(users.keySet());
@@ -116,6 +116,17 @@ public class TestJdbcCacheStore {
         cache.putAll(users);
 
         UserPO user = (UserPO)cache.get(1L);
+    }
 
+    @Test
+    public void testMain() throws Exception {
+        NamedCache cache = CacheFactory.getCache("Users");
+        while (true) {
+            Object obj = cache.get(1L);
+            if (obj != null) {
+                int g = 0;
+            }
+            Thread.sleep(200);
+        }
     }
 }

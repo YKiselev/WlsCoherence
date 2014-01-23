@@ -64,17 +64,24 @@
         </distributed-scheme>
 
         <proxy-scheme>
-            <!--<scheme-name>proxy-1</scheme-name>-->
-            <service-name>TcpProxyService</service-name>
-            <acceptor-config/>
-            <proxy-config>
-                <cache-service-proxy>
-                    <enabled>true</enabled>
-                </cache-service-proxy>
-                <invocation-service-proxy>
-                    <enabled>true</enabled>
-                </invocation-service-proxy>
-            </proxy-config>
+            <service-name>ExtendTcpProxyService</service-name>
+            <thread-count>5</thread-count>
+            <acceptor-config>
+                <tcp-acceptor>
+                    <local-address>
+                        <address>silent</address>
+                        <port>27600</port>
+                    </local-address>
+                </tcp-acceptor>
+            </acceptor-config>
+            <!--<proxy-config>-->
+                <!--<cache-service-proxy>-->
+                    <!--<enabled>true</enabled>-->
+                <!--</cache-service-proxy>-->
+                <!--<invocation-service-proxy>-->
+                    <!--<enabled>true</enabled>-->
+                <!--</invocation-service-proxy>-->
+            <!--</proxy-config>-->
             <autostart>true</autostart>
         </proxy-scheme>
 
