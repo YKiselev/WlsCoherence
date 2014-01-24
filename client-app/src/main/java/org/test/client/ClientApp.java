@@ -3,6 +3,7 @@ package org.test.client;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
+import org.test.pof.Department;
 import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
 
@@ -19,7 +20,9 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        testCache();
+        //testCache();
+
+        testCache2();
 
         //testInvocable();
     }
@@ -75,6 +78,49 @@ public class ClientApp {
 
         //boolean flag = cache.keySet().removeAll(Arrays.asList(5L, 15L, 25L, 35L, 45L, 55L));
         //System.out.println("removeAll() = " + flag);
+
+        System.out.println("get(1) = " + cache.get(1L));
+    }
+
+    private static void testCache2() {
+        NamedCache cache = CacheFactory.getCache("Departments");
+
+        Map<Long, Department> depts = new HashMap<Long, Department>();
+
+        for (long i = 1L; i < COUNT; i++) {
+            Department d = new Department();
+
+            d.setId(i);
+            d.setName("John");
+            d.setCreated(new Date());
+
+            depts.put(i, d);
+        }
+
+        final long t0 = System.nanoTime();
+        for (Map.Entry<Long, Department> entry : depts.entrySet()) {
+            cache.put(entry.getKey(), entry.getValue());
+        }
+        final long t1 = System.nanoTime();
+
+        depts.clear();
+
+        for (long i = COUNT; i < 2 * COUNT; i++) {
+            Department d = new Department();
+
+            d.setId(i);
+            d.setName("John");
+            d.setCreated(new Date());
+
+            depts.put(i, d);
+        }
+
+        final long t2 = System.nanoTime();
+        cache.putAll(depts);
+        final long t3 = System.nanoTime();
+
+        System.out.println("Total put() time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("putAll() time: " + (t3 - t2) / 1000000L + " ms");
 
         System.out.println("get(1) = " + cache.get(1L));
     }

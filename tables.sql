@@ -12,6 +12,14 @@ create table Users(
             UpdatedAt datetime null
 )
 
+CREATE TABLE Departments
+(
+   Id decimal(15) PRIMARY KEY NOT NULL,
+   Name varchar2(100),
+   CreatedAt timestamp NOT NULL
+)
+;
+
 
 select count(*) from Users
 

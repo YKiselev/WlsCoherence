@@ -10,8 +10,14 @@
         </user-type>
 
         <user-type>
+            <type-id>1002</type-id>
+            <class-name>org.test.pof.Department</class-name>
+        </user-type>
+
+        <user-type>
             <type-id>2000</type-id>
             <class-name>org.test.pof.MyInvocable1</class-name>
         </user-type>
+
     </user-type-list>
 </pof-config>

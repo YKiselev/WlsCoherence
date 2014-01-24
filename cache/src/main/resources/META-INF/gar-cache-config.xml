@@ -13,24 +13,19 @@
             <scheme-name>users</scheme-name>
         </cache-mapping>
 
+        <cache-mapping>
+            <cache-name>Departments</cache-name>
+            <scheme-name>distributed-hibernate-backed</scheme-name>
+            <init-params>
+                <init-param>
+                    <param-name>entity-name</param-name>
+                    <param-value>org.test.pof.Department</param-value>
+                </init-param>
+            </init-params>
+        </cache-mapping>
     </caching-scheme-mapping>
 
     <caching-schemes>
-        <!--<near-scheme>-->
-            <!--<scheme-name>near</scheme-name>-->
-            <!--<front-scheme>-->
-                <!--<local-scheme>-->
-                    <!--<scheme-name>LocalMemoryScheme</scheme-name>-->
-                    <!--<expiry-delay>5m</expiry-delay>-->
-                <!--</local-scheme>-->
-            <!--</front-scheme>-->
-            <!--<back-scheme>-->
-                <!--<distributed-scheme>-->
-                    <!--<scheme-ref>distributed-db-backed</scheme-ref>-->
-                <!--</distributed-scheme>-->
-            <!--</back-scheme>-->
-        <!--</near-scheme>-->
-
         <!--     DB Backed Distributed caching scheme.    -->
         <distributed-scheme>
             <scheme-name>users</scheme-name>
@@ -43,6 +38,33 @@
                             <expiry-delay>5m</expiry-delay>
                         </local-scheme>
                     </internal-cache-scheme>
+                    <cachestore-scheme>
+                        <class-scheme>
+                            <scheme-ref>my-store-class-scheme</scheme-ref>
+                        </class-scheme>
+                    </cachestore-scheme>
+                </read-write-backing-map-scheme>
+            </backing-map-scheme>
+        </distributed-scheme>
+
+        <distributed-scheme>
+            <scheme-name>distributed-hibernate-backed</scheme-name>
+            <service-name>DistributedCache</service-name>
+            <backing-map-scheme>
+                <read-write-backing-map-scheme>
+                    <internal-cache-scheme>
+                        <local-scheme>
+                            <high-units>1000</high-units>
+                            <expiry-delay>5m</expiry-delay>
+                        </local-scheme>
+                    </internal-cache-scheme>
+                    <cachestore-scheme>
+                        <class-scheme>
+                            <scheme-ref>hibernate-store-class-scheme</scheme-ref>
+                        </class-scheme>
+                    </cachestore-scheme>
+                    <read-only>false</read-only>
+                    <write-delay-seconds>0</write-delay-seconds>
                 </read-write-backing-map-scheme>
             </backing-map-scheme>
         </distributed-scheme>
@@ -62,13 +84,7 @@
                     </internal-cache-scheme>
                     <cachestore-scheme>
                         <class-scheme>
-                            <class-name>org.test.stores.MyStore</class-name>
-                            <init-params>
-                                <init-param>
-                                    <param-type>java.lang.String</param-type>
-                                    <param-value>{cache-name}</param-value>
-                                </init-param>
-                            </init-params>
+                            <scheme-ref>my-store-class-scheme</scheme-ref>
                         </class-scheme>
                     </cachestore-scheme>
                     <read-only>false</read-only>
@@ -79,12 +95,34 @@
             <autostart>true</autostart>
         </distributed-scheme>
 
-        <!--<invocation-scheme>-->
-            <!--<scheme-name>invocation-service</scheme-name>-->
-            <!--<service-name>ExtendTcpInvocationService</service-name>-->
-            <!--<thread-count>2</thread-count>-->
-            <!--<autostart>true</autostart>-->
-        <!--</invocation-scheme>-->
+        <class-scheme>
+            <scheme-name>my-store-class-scheme</scheme-name>
+            <class-name>org.test.stores.MyStore</class-name>
+            <init-params>
+                <init-param>
+                    <param-type>java.lang.String</param-type>
+                    <param-value>{cache-name}</param-value>
+                </init-param>
+            </init-params>
+        </class-scheme>
+
+        <class-scheme>
+            <scheme-name>hibernate-store-class-scheme</scheme-name>
+            <class-name>org.test.stores.MyHibernateStore</class-name>
+            <init-params>
+                <init-param>
+                    <param-type>java.lang.String</param-type>
+                    <param-value>{entity-name}</param-value>
+                </init-param>
+            </init-params>
+        </class-scheme>
+
+        <invocation-scheme>
+            <scheme-name>invocation-service</scheme-name>
+            <service-name>ExtendTcpInvocationService</service-name>
+            <thread-count>2</thread-count>
+            <autostart>true</autostart>
+        </invocation-scheme>
 
         <proxy-scheme>
             <service-name>ExtendTcpProxyService</service-name>
