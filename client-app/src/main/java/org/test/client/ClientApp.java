@@ -1,6 +1,5 @@
 package org.test.client;
 
-import com.tangosol.io.pof.PofPrincipal;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
@@ -9,8 +8,15 @@ import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
 
 import javax.security.auth.Subject;
+import javax.security.auth.callback.*;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Uze on 26.12.13.
@@ -20,8 +26,34 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        Subject subject = new Subject(true, Collections.singleton(new PofPrincipal("user1")),
-                Collections.emptySet(), Collections.emptySet());
+        Subject subject;// = new Subject(true, Collections.singleton(new PofPrincipal("user1")),
+        //Collections.emptySet(), Collections.emptySet());
+
+        try {
+            final LoginContext loginContext = new LoginContext("client-app", new CallbackHandler() {
+                @Override
+                public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                    for (int i = 0; i < callbacks.length; i++) {
+                        if (callbacks[i] instanceof TextOutputCallback) {
+                            // display a message according to a specified type
+                        } else if (callbacks[i] instanceof NameCallback) {
+                            // prompt the user for a username
+                        } else if (callbacks[i] instanceof PasswordCallback) {
+                            // prompt the user for a password
+                        } else {
+                            throw new UnsupportedCallbackException(callbacks[i], "Unrecognized callback");
+                        }
+                    }
+                }
+            });
+
+            loginContext.login();
+
+            subject = loginContext.getSubject();
+        } catch (LoginException e) {
+            e.printStackTrace();
+            return;
+        }
 
         PrivilegedAction pa = new PrivilegedAction() {
             @Override
