@@ -7,9 +7,9 @@
         <identity-asserter>
             <class-name>org.test.security.PasswordIdentityAsserter</class-name>
         </identity-asserter>
-        <identity-transformer>
-            <class-name>org.test.client.PasswordIdentityTransformer</class-name>
-        </identity-transformer>
+        <!--<identity-transformer>-->
+            <!--<class-name>org.test.client.PasswordIdentityTransformer</class-name>-->
+        <!--</identity-transformer>-->
         <subject-scope>true</subject-scope>
     </security-config>
 

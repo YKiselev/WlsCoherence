@@ -4,13 +4,11 @@ import com.tangosol.io.pof.PofPrincipal;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
-import com.tangosol.net.security.Security;
 import org.test.pof.Department;
 import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
 
 import javax.security.auth.Subject;
-import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.*;
 
@@ -30,9 +28,9 @@ public class ClientApp {
             public Object run() {
                 //testCache();
 
-                testCache2();
+                //testCache2();
 
-                //testInvocable();
+                testInvocable();
 
                 return null;
             }

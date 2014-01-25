@@ -154,7 +154,7 @@
                             <param-value>{service}</param-value>
                         </init-param>
                     </init-params>
-                    <enabled>false</enabled>
+                    <enabled>true</enabled>
                 </invocation-service-proxy>
             </proxy-config>
             <autostart>true</autostart>

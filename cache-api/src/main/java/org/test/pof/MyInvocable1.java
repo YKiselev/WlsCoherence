@@ -3,8 +3,6 @@ package org.test.pof;
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.net.AbstractInvocable;
 
-import java.io.Serializable;
-
 /**
  * org.test.client
  * <p/>
@@ -24,6 +22,7 @@ public class MyInvocable1 extends AbstractInvocable {
 
     @Override
     public void run() {
+        System.out.println("!!!!!!!! " + getClass().getName() + " called");
         setResult(Runtime.getRuntime().freeMemory());
     }
 }
