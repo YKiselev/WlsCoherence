@@ -23,8 +23,8 @@
         <multicast-listener>
             <address>234.1.1.5</address>
             <port>33387</port>
-            <time-to-live>5</time-to-live>
-            <join-timeout-milliseconds>15000</join-timeout-milliseconds>
+            <time-to-live>0</time-to-live>
+            <join-timeout-milliseconds>2000</join-timeout-milliseconds>
         </multicast-listener>
     </cluster-config>
 
