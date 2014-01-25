@@ -1,16 +1,18 @@
 package org.test.client;
 
+import com.tangosol.io.pof.PofPrincipal;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
+import com.tangosol.net.security.Security;
 import org.test.pof.Department;
 import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.util.*;
 
 /**
  * Created by Uze on 26.12.13.
@@ -20,11 +22,22 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        //testCache();
+        Subject subject = new Subject(true, Collections.singleton(new PofPrincipal("user1")),
+                Collections.emptySet(), Collections.emptySet());
 
-        testCache2();
+        PrivilegedAction pa = new PrivilegedAction() {
+            @Override
+            public Object run() {
+                //testCache();
 
-        //testInvocable();
+                testCache2();
+
+                //testInvocable();
+
+                return null;
+            }
+        };
+        Subject.doAs(subject, pa);
     }
 
     private static void testCache() {
