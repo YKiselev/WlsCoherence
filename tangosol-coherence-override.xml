@@ -23,8 +23,8 @@
         <multicast-listener>
             <address>234.1.1.5</address>
             <port>33387</port>
-            <time-to-live>5</time-to-live>
-            <join-timeout-milliseconds>15000</join-timeout-milliseconds>
+            <time-to-live>0</time-to-live>
+            <join-timeout-milliseconds>2000</join-timeout-milliseconds>
         </multicast-listener>
     </cluster-config>
 
@@ -32,4 +32,15 @@
         <severity-level system-property="tangosol.coherence.log.level">5</severity-level>
         <character-limit system-property="tangosol.coherence.log.limit">0</character-limit>
     </logging-config>
+
+    <security-config>
+        <identity-asserter>
+            <class-name>org.test.security.PasswordIdentityAsserter</class-name>
+        </identity-asserter>
+        <!--<identity-transformer>-->
+            <!--<class-name>org.test.client.PasswordIdentityTransformer</class-name>-->
+        <!--</identity-transformer>-->
+        <subject-scope>true</subject-scope>
+    </security-config>
+
 </coherence>

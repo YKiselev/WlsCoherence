@@ -1,7 +1,5 @@
 <?xml version='1.0'?>
-<coherence xmlns="http://xmlns.oracle.com/coherence/coherence-operational-config"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://xmlns.oracle.com/coherence/coherence-cache-config/1.2/coherence-operational-config.xsd">
+<coherence xmlns="http://xmlns.oracle.com/coherence/coherence-operational-config">
 
     <!--<cluster-config>-->
         <!--<member-identity>-->
@@ -36,4 +34,13 @@
         <severity-level system-property="tangosol.coherence.log.level">5</severity-level>
         <character-limit system-property="tangosol.coherence.log.limit">0</character-limit>
     </logging-config>
+
+    <security-config>
+        <!--<enabled system-property="tangosol.coherence.security">true</enabled>-->
+        <!--<identity-transformer>-->
+            <!--<class-name>org.test.client.PasswordIdentityTransformer</class-name>-->
+        <!--</identity-transformer>-->
+        <subject-scope>true</subject-scope>
+    </security-config>
+
 </coherence>

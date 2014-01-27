@@ -2,11 +2,8 @@ package org.test.pof;
 
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.net.AbstractInvocable;
-import com.tangosol.net.CacheFactory;
-import com.tangosol.net.NamedCache;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.Serializable;
 
 /**
  * org.test.client
@@ -27,6 +24,8 @@ public class MyInvocable1 extends AbstractInvocable {
 
     @Override
     public void run() {
+        System.out.println("!!!!!!!! " + getClass().getName() + " called");
+        setResult(Runtime.getRuntime().freeMemory());
         NamedCache cache = CacheFactory.getCache("Users");
         Object res = cache.get(1L);
         System.out.println("cache.get(1L)=" + res);
