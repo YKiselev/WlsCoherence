@@ -43,6 +43,11 @@
                             <expiry-delay>5m</expiry-delay>
                         </local-scheme>
                     </internal-cache-scheme>
+                    <cachestore-scheme>
+                        <class-scheme>
+                            <scheme-ref>my-store-class-scheme</scheme-ref>
+                        </class-scheme>
+                    </cachestore-scheme>
                 </read-write-backing-map-scheme>
             </backing-map-scheme>
         </distributed-scheme>
@@ -62,13 +67,7 @@
                     </internal-cache-scheme>
                     <cachestore-scheme>
                         <class-scheme>
-                            <class-name>org.test.stores.MyStore</class-name>
-                            <init-params>
-                                <init-param>
-                                    <param-type>java.lang.String</param-type>
-                                    <param-value>{cache-name}</param-value>
-                                </init-param>
-                            </init-params>
+                            <scheme-ref>my-store-class-scheme</scheme-ref>
                         </class-scheme>
                     </cachestore-scheme>
                     <read-only>false</read-only>
@@ -79,12 +78,28 @@
             <autostart>true</autostart>
         </distributed-scheme>
 
-        <!--<invocation-scheme>-->
-            <!--<scheme-name>invocation-service</scheme-name>-->
-            <!--<service-name>ExtendTcpInvocationService</service-name>-->
-            <!--<thread-count>2</thread-count>-->
-            <!--<autostart>true</autostart>-->
-        <!--</invocation-scheme>-->
+        <class-scheme>
+            <scheme-name>my-store-class-scheme</scheme-name>
+            <class-name>org.test.stores.MyStore</class-name>
+            <init-params>
+                <init-param>
+                    <param-type>java.lang.String</param-type>
+                    <param-value>{cache-name}</param-value>
+                </init-param>
+            </init-params>
+        </class-scheme>
+
+        <invocation-scheme>
+            <scheme-name>invocation-service</scheme-name>
+            <service-name>ExtendTcpInvocationService</service-name>
+            <!--<serializer>-->
+                <!--<instance>-->
+                    <!--<class-name>com.tangosol.io.DefaultSerializer</class-name>-->
+                <!--</instance>-->
+            <!--</serializer>-->
+            <thread-count>4</thread-count>
+            <autostart>true</autostart>
+        </invocation-scheme>
 
         <proxy-scheme>
             <service-name>ExtendTcpProxyService</service-name>
@@ -102,11 +117,10 @@
                     <enabled>true</enabled>
                 </cache-service-proxy>
                 <invocation-service-proxy>
-                    <enabled>false</enabled>
+                    <enabled>true</enabled>
                 </invocation-service-proxy>
             </proxy-config>
             <autostart>true</autostart>
         </proxy-scheme>
-
     </caching-schemes>
 </cache-config>

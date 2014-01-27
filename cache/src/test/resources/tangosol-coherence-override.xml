@@ -16,7 +16,7 @@
                     <!--<port>27500</port>-->
                 <!--</socket-address>-->
             <!--</well-known-addresses>-->
-            <address system-property="tangosol.coherence.localhost">silent</address>
+            <address system-property="tangosol.coherence.localhost">tdsfwl1</address>
             <port system-property="tangosol.coherence.localport">27500</port>
         </unicast-listener>
 

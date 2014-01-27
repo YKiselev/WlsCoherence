@@ -1,15 +1,17 @@
 package org.test.client;
 
+import com.tangosol.io.pof.PofReader;
+import com.tangosol.io.pof.PofWriter;
+import com.tangosol.io.pof.PortableObject;
+import com.tangosol.net.AbstractInvocable;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
 import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Uze on 26.12.13.
@@ -19,12 +21,14 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        testCache();
+        //testCachePut();
 
-        //testInvocable();
+        //testCacheGet();
+
+        testInvocable();
     }
 
-    private static void testCache() {
+    private static void testCachePut() {
         NamedCache cache = CacheFactory.getCache("Users");
 
         Map<Long, UserPO> users = new HashMap<Long, UserPO>();
@@ -47,8 +51,6 @@ public class ClientApp {
         }
         final long t1 = System.nanoTime();
 
-        //cache.clear();
-
         users.clear();
 
         for (long i = COUNT; i < 2 * COUNT; i++) {
@@ -69,19 +71,56 @@ public class ClientApp {
 
         System.out.println("Total put() time: " + (t1 - t0) / 1000000L + " ms");
         System.out.println("putAll() time: " + (t3 - t2) / 1000000L + " ms");
+    }
 
-        Map<Long, UserPO> map2 = cache.getAll(Arrays.asList(1L, 2L, 3L, 4L, 5L));
-        System.out.println("getAll() = " + map2);
+    private static void testCacheGet() {
+        final NamedCache cache = CacheFactory.getCache("Users");
 
-        //boolean flag = cache.keySet().removeAll(Arrays.asList(5L, 15L, 25L, 35L, 45L, 55L));
-        //System.out.println("removeAll() = " + flag);
+        final List<Long> ids = new ArrayList<Long>((int)(2 * COUNT));
+        for (long i = 1L; i < 2 * COUNT; i++) {
+            ids.add(i);
+        }
+
+        long t0 = System.nanoTime();
+        Map<Long, UserPO> map = cache.getAll(ids);
+        long t1 = System.nanoTime();
+        System.out.println("getAll() = " + map + ", time: " + (t1 - t0) / 1000000 + " ms");
 
         System.out.println("get(1) = " + cache.get(1L));
     }
 
     private static void testInvocable() {
         InvocationService invocationService = (InvocationService) CacheFactory.getService("ExtendTcpInvocationService");
-        Map result = invocationService.query(new MyInvocable1(), null);
+//        Map result = invocationService.query(new AbstractInvocable() {
+//            @Override
+//            public void run() {
+//                setResult(CacheFactory.getCache("Users").get(1L));
+//            }
+//        }, null);
+
+        //Map result = invocationService.query(new MyInvocable1(), null);
+
+        Map result = invocationService.query(new MyInvocable2(), null);
+
         System.out.println("Result of invocation: " + result);
+    }
+
+    public static class MyInvocable2 extends AbstractInvocable implements PortableObject {
+
+        public MyInvocable2() {
+        }
+
+        @Override
+        public void run() {
+            setResult("All Ok!");
+        }
+
+        @Override
+        public void readExternal(PofReader pofReader) throws IOException {
+        }
+
+        @Override
+        public void writeExternal(PofWriter pofWriter) throws IOException {
+        }
     }
 }

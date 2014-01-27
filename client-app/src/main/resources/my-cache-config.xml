@@ -39,7 +39,7 @@
                 <tcp-initiator>
                     <remote-addresses>
                         <socket-address>
-                            <address>silent</address>
+                            <address>tdsfwl1</address>
                             <port>27600</port>
                         </socket-address>
                     </remote-addresses>
@@ -58,7 +58,7 @@
                 <tcp-initiator>
                     <remote-addresses>
                         <socket-address>
-                            <address>silent</address>
+                            <address>tdsfwl1</address>
                             <port>27600</port>
                         </socket-address>
                     </remote-addresses>
@@ -66,8 +66,14 @@
                 <outgoing-message-handler>
                     <request-timeout>5s</request-timeout>
                 </outgoing-message-handler>
+                <!--<serializer>-->
+                    <!--<instance>-->
+                        <!--<class-name>com.tangosol.io.DefaultSerializer</class-name>-->
+                    <!--</instance>-->
+                <!--</serializer>-->
                 <connect-timeout>10s</connect-timeout>
             </initiator-config>
         </remote-invocation-scheme>
+
     </caching-schemes>
 </cache-config>
