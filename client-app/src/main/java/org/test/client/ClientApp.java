@@ -58,9 +58,9 @@ public class ClientApp {
         PrivilegedAction pa = new PrivilegedAction() {
             @Override
             public Object run() {
-                //testCache();
+                testCache();
 
-                //testCache2();
+                testCache2();
 
                 testInvocable();
 
