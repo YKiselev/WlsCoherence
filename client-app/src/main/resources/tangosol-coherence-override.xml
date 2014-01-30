@@ -37,9 +37,10 @@
 
     <security-config>
         <!--<enabled system-property="tangosol.coherence.security">true</enabled>-->
-        <!--<identity-transformer>-->
-            <!--<class-name>org.test.client.PasswordIdentityTransformer</class-name>-->
-        <!--</identity-transformer>-->
+        <identity-transformer>
+            <class-name>org.test.client.PasswordIdentityTransformer</class-name>
+            <!--<class-name>com.tangosol.net.security.DefaultIdentityTransformer</class-name>-->
+        </identity-transformer>
         <subject-scope>true</subject-scope>
     </security-config>
 

@@ -1,5 +1,6 @@
 package org.test.stores;
 
+import com.tangosol.coherence.hibernate.HibernateCacheStore;
 import org.springframework.jdbc.core.RowMapper;
 import org.test.mappers.LongRowMapper;
 import org.test.mappers.SimpleRowMapper;

@@ -2,8 +2,12 @@ package org.test.pof;
 
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.net.AbstractInvocable;
+import com.tangosol.net.CacheFactory;
+import com.tangosol.net.NamedCache;
 
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * org.test.client

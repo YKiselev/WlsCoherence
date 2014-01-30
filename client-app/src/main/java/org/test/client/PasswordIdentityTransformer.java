@@ -17,6 +17,7 @@ public class PasswordIdentityTransformer implements IdentityTransformer {
     @Override
     public Object transformIdentity(Subject subject, Service service) throws SecurityException {
         System.out.println("PID TRANSFORMER: " + subject + ", service=" + service);
-        return new Object[]{"12345678".toCharArray(), "user1"};
+        return subject;
+        //return new Object[]{"12345678".toCharArray(), "user1"};
     }
 }

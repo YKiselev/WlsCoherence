@@ -14,6 +14,17 @@
         </cache-mapping>
 
         <cache-mapping>
+            <cache-name>Managers</cache-name>
+            <scheme-name>distributed-hibernate-backed</scheme-name>
+            <init-params>
+                <init-param>
+                    <param-name>entity-name</param-name>
+                    <param-value>org.test.pof.Manager</param-value>
+                </init-param>
+            </init-params>
+        </cache-mapping>
+
+        <cache-mapping>
             <cache-name>Departments</cache-name>
             <scheme-name>distributed-hibernate-backed</scheme-name>
             <init-params>
