@@ -24,8 +24,8 @@ public class UserRowMapper implements RowMapper<UserPO> {
         result.setAddressLine2(resultSet.getString("AddressLine2"));
         result.setPostIndex(resultSet.getString("PostIndex"));
         result.setPhone1(resultSet.getString("Phone1"));
-        result.setCreated(resultSet.getDate("Created"));
-        result.setUpdated(resultSet.getDate("Updated"));
+        result.setCreated(resultSet.getDate("CreatedAt"));
+        result.setUpdated(resultSet.getDate("UpdatedAt"));
 
         return result;
     }

@@ -16,7 +16,7 @@
 
         <user-type>
             <type-id>1003</type-id>
-            <class-name>org.test.pof.Manager</class-name>
+            <class-name>org.test.vo.ManagerVO</class-name>
         </user-type>
 
         <user-type>

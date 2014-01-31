@@ -19,6 +19,7 @@ public class Department {
 
     @PortableProperty(1)
     @Id
+    @Column(name = "Id")
     private long id;
     @PortableProperty(2)
     @Column(name = "Name")

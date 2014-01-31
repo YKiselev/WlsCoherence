@@ -6,6 +6,7 @@ import com.tangosol.net.NamedCache;
 import org.test.pof.Department;
 import org.test.pof.MyInvocable1;
 import org.test.pof.UserPO;
+import org.test.vo.ManagerVO;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
@@ -26,7 +27,7 @@ public class ClientApp {
     public static final long COUNT = 100L;
 
     public static void main(String[] args) {
-        Subject subject;// = new Subject(true, Collections.singleton(new PofPrincipal("user1")),
+        Subject subject = null;// = new Subject(true, Collections.singleton(new PofPrincipal("user1")),
         //Collections.emptySet(), Collections.emptySet());
 
         try {
@@ -62,7 +63,9 @@ public class ClientApp {
 
                 testCache2();
 
-                testInvocable();
+                testCache3();
+
+                //testInvocable();
 
                 return null;
             }
@@ -160,6 +163,49 @@ public class ClientApp {
 
         final long t2 = System.nanoTime();
         cache.putAll(depts);
+        final long t3 = System.nanoTime();
+
+        System.out.println("Total put() time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("putAll() time: " + (t3 - t2) / 1000000L + " ms");
+
+        System.out.println("get(1) = " + cache.get(1L));
+    }
+
+    private static void testCache3() {
+        NamedCache cache = CacheFactory.getCache("Managers");
+
+        Map<Long, ManagerVO> managers = new HashMap<Long, ManagerVO>();
+
+        for (long i = 1L; i < COUNT; i++) {
+            ManagerVO m = new ManagerVO();
+
+            m.setId(i);
+            m.setName("John");
+            m.setSalary(5000);
+
+            managers.put(i, m);
+        }
+
+        final long t0 = System.nanoTime();
+        for (Map.Entry<Long, ManagerVO> entry : managers.entrySet()) {
+            cache.put(entry.getKey(), entry.getValue());
+        }
+        final long t1 = System.nanoTime();
+
+        managers.clear();
+
+        for (long i = COUNT; i < 2 * COUNT; i++) {
+            ManagerVO m = new ManagerVO();
+
+            m.setId(i);
+            m.setName("John");
+            m.setSalary(5000);
+
+            managers.put(i, m);
+        }
+
+        final long t2 = System.nanoTime();
+        cache.putAll(managers);
         final long t3 = System.nanoTime();
 
         System.out.println("Total put() time: " + (t1 - t0) / 1000000L + " ms");

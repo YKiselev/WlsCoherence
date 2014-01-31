@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration SYSTEM
-        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <!--<property name="hibernate.connection.datasource">jdbc/cacheDS</property>-->
+        <property name="hibernate.connection.datasource">jdbc/cacheDS</property>
+
         <property name="hibernate.c3p0.min_size">0</property>
         <property name="hibernate.c3p0.max_size">5</property>
         <property name="hibernate.c3p0.timeout">300</property>
@@ -12,14 +14,18 @@
 
         <!--<property name="hibernate.cache.provider_class">com.tangosol.coherence.hibernate.CoherenceCacheProvider</property>-->
 
-        <property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>
-        <property name="hibernate.connection.url">jdbc:oracle:thin:@Silent:1521:XE</property>
-        <property name="hibernate.connection.username">test2</property>
-        <property name="hibernate.connection.password">test2</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.SybaseDialect</property>
+
+        <!--<property name="hibernate.connection.driver_class">oracle.jdbc.OracleDriver</property>-->
+        <!--<property name="hibernate.connection.url">jdbc:oracle:thin:@Silent:1521:XE</property>-->
+        <!--<property name="hibernate.connection.username">test2</property>-->
+        <!--<property name="hibernate.connection.password">test2</property>-->
+        <!--<property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>-->
+
         <property name="hibernate.hbm2ddl.auto">validate</property>
 
         <mapping class="org.test.pof.Department"/>
+        <mapping class="org.test.pof.Manager"/>
         <!--<mapping resource="department.xml"/>-->
     </session-factory>
 

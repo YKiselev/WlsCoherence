@@ -19,6 +19,11 @@
             <scheme-name>near</scheme-name>
         </cache-mapping>
 
+        <cache-mapping>
+            <cache-name>Managers</cache-name>
+            <scheme-name>near</scheme-name>
+        </cache-mapping>
+
     </caching-scheme-mapping>
 
     <caching-schemes>
@@ -44,14 +49,14 @@
                 <tcp-initiator>
                     <remote-addresses>
                         <socket-address>
-                            <address>silent</address>
+                            <address system-property="coherence.server">localhost</address>
                             <port>27600</port>
                         </socket-address>
                     </remote-addresses>
-                    <connect-timeout>15s</connect-timeout>
+                    <connect-timeout>35s</connect-timeout>
                 </tcp-initiator>
                 <outgoing-message-handler>
-                    <request-timeout>5s</request-timeout>
+                    <request-timeout>35s</request-timeout>
                 </outgoing-message-handler>
             </initiator-config>
         </remote-cache-scheme>
@@ -63,16 +68,22 @@
                 <tcp-initiator>
                     <remote-addresses>
                         <socket-address>
-                            <address>silent</address>
+                            <address system-property="coherence.server">localhost</address>
                             <port>27600</port>
                         </socket-address>
                     </remote-addresses>
                 </tcp-initiator>
                 <outgoing-message-handler>
-                    <request-timeout>5s</request-timeout>
+                    <request-timeout>15s</request-timeout>
                 </outgoing-message-handler>
+                <!--<serializer>-->
+                    <!--<instance>-->
+                        <!--<class-name>com.tangosol.io.DefaultSerializer</class-name>-->
+                    <!--</instance>-->
+                <!--</serializer>-->
                 <connect-timeout>10s</connect-timeout>
             </initiator-config>
         </remote-invocation-scheme>
+
     </caching-schemes>
 </cache-config>
