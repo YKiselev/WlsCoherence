@@ -3,6 +3,10 @@
            xmlns="http://xmlns.oracle.com/coherence/coherence-operational-config"
            xsi:schemaLocation="http://xmlns.oracle.com/coherence/coherence-operational-config coherence-operational-config.xsd">
 
+    <configurable-cache-factory-config>
+        <class-name>org.test.factories.MyCacheFactory</class-name>
+    </configurable-cache-factory-config>
+
     <security-config>
         <identity-asserter>
             <class-name>org.test.security.PasswordIdentityAsserter</class-name>

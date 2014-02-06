@@ -20,6 +20,14 @@ CREATE TABLE Departments
 )
 ;
 
+CREATE TABLE Managers
+(
+   Id decimal(15) PRIMARY KEY NOT NULL,
+   Name varchar2(100) NULL,
+   Salary int NULL
+)
+;
+
 
 select count(*) from Users
 

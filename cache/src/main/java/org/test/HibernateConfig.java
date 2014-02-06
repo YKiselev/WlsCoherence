@@ -13,13 +13,15 @@ public class HibernateConfig {
         INSTANCE;
 
         private final AnnotationConfiguration configuration = new AnnotationConfiguration();
+        private final SessionFactory sessionFactory;
 
         Holder() {
             configuration.configure();
+            this.sessionFactory = configuration.buildSessionFactory();
         }
     }
 
-    public static SessionFactory createSessionFactory() {
-        return Holder.INSTANCE.configuration.buildSessionFactory();
+    public static SessionFactory getSessionFactory() {
+        return Holder.INSTANCE.sessionFactory;//.configuration.buildSessionFactory();
     }
 }

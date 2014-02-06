@@ -3,8 +3,10 @@ package org.test.client;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
+import com.tangosol.net.Service;
+import org.test.invocable.ItemOperation;
 import org.test.pof.Department;
-import org.test.pof.MyInvocable1;
+import org.test.invocable.MyInvocable1;
 import org.test.pof.UserPO;
 import org.test.vo.ManagerVO;
 
@@ -50,7 +52,7 @@ public class ClientApp {
 
             loginContext.login();
 
-            subject = loginContext.getSubject();
+            //subject = loginContext.getSubject();
         } catch (LoginException e) {
             e.printStackTrace();
             return;
@@ -59,14 +61,22 @@ public class ClientApp {
         PrivilegedAction pa = new PrivilegedAction() {
             @Override
             public Object run() {
-                testCache();
+                //while (true) {
+                    testCache();
 
-                testCache2();
+                    //testCache2();
 
-                testCache3();
+                    //testCache3();
 
-                //testInvocable();
+                    testInvocable();
 
+//                    try {
+//                        Thread.sleep(25);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                        break;
+//                    }
+            //    }
                 return null;
             }
         };
@@ -215,8 +225,19 @@ public class ClientApp {
     }
 
     private static void testInvocable() {
+        Service svc = CacheFactory.getService("ExtendTcpProxyService");
+
         InvocationService invocationService = (InvocationService) CacheFactory.getService("ExtendTcpInvocationService");
+
         Map result = invocationService.query(new MyInvocable1(), null);
         System.out.println("Result of invocation: " + result);
+
+        String src = "My new item! " + new Date();
+
+        result = invocationService.query(new ItemOperation(src), null);
+        System.out.println("Result of invocation: " + result);
+
+        //result = invocationService.query(new AmendOperation(src), null);
+        //System.out.println("Result of invocation: " + result);
     }
 }

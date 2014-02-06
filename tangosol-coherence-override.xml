@@ -33,6 +33,16 @@
         <character-limit system-property="tangosol.coherence.log.limit">0</character-limit>
     </logging-config>
 
+    <configurable-cache-factory-config>
+        <class-name>org.test.factories.MyCacheFactory</class-name>
+        <init-params>
+            <init-param>
+                <param-type>string</param-type>
+                <param-value system-property="tangosol.coherence.cacheconfig">cache/src/main/resources/META-INF/gar-cache-config.xml</param-value>
+            </init-param>
+        </init-params>
+    </configurable-cache-factory-config>
+
     <security-config>
         <identity-asserter>
             <class-name>org.test.security.PasswordIdentityAsserter</class-name>

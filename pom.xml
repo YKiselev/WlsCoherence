@@ -11,6 +11,7 @@
         <module>cache-api</module>
         <module>cache</module>
         <module>client-app</module>
+        <module>cache-ejb</module>
     </modules>
     <packaging>pom</packaging>
 

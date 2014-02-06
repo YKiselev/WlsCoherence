@@ -1,4 +1,4 @@
-package org.test.pof;
+package org.test.invocable;
 
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.net.AbstractInvocable;
@@ -29,6 +29,7 @@ public class MyInvocable1 extends AbstractInvocable {
     @Override
     public void run() {
         System.out.println("!!!!!!!! " + getClass().getName() + " called");
+
         setResult(Runtime.getRuntime().freeMemory());
         NamedCache cache = CacheFactory.getCache("Users");
         Object res = cache.get(1L);

@@ -21,8 +21,15 @@
 
         <user-type>
             <type-id>2000</type-id>
-            <class-name>org.test.pof.MyInvocable1</class-name>
+            <class-name>org.test.invocable.MyInvocable1</class-name>
+        </user-type>
+
+        <user-type>
+            <type-id>2001</type-id>
+            <class-name>org.test.invocable.ItemOperation</class-name>
         </user-type>
 
     </user-type-list>
+    <allow-interfaces>true</allow-interfaces>
+    <allow-subclasses>true</allow-subclasses>
 </pof-config>

@@ -152,6 +152,7 @@
             <acceptor-config>
                 <tcp-acceptor>
                     <local-address>
+                        <address>localhost</address>
                         <port>27600</port>
                     </local-address>
                 </tcp-acceptor>
@@ -169,13 +170,13 @@
                     <enabled>true</enabled>
                 </cache-service-proxy>
                 <invocation-service-proxy>
-                    <class-name>org.test.security.EntitledInvocationService</class-name>
-                    <init-params>
-                        <init-param>
-                            <param-type>com.tangosol.net.InvocationService</param-type>
-                            <param-value>{service}</param-value>
-                        </init-param>
-                    </init-params>
+                    <!--<class-name>org.test.security.EntitledInvocationService</class-name>-->
+                    <!--<init-params>-->
+                        <!--<init-param>-->
+                            <!--<param-type>com.tangosol.net.InvocationService</param-type>-->
+                            <!--<param-value>{service}</param-value>-->
+                        <!--</init-param>-->
+                    <!--</init-params>-->
                     <enabled>true</enabled>
                 </invocation-service-proxy>
             </proxy-config>
