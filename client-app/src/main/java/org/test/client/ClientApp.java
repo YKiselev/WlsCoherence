@@ -52,7 +52,7 @@ public class ClientApp {
 
             loginContext.login();
 
-            //subject = loginContext.getSubject();
+            subject = loginContext.getSubject();
         } catch (LoginException e) {
             e.printStackTrace();
             return;
@@ -62,13 +62,15 @@ public class ClientApp {
             @Override
             public Object run() {
                 //while (true) {
-                    testCache();
+                testUserKeys();
+
+                    //testCache();
 
                     //testCache2();
 
                     //testCache3();
 
-                    testInvocable();
+                    //testInvocable();
 
 //                    try {
 //                        Thread.sleep(25);
@@ -136,6 +138,41 @@ public class ClientApp {
         //System.out.println("removeAll() = " + flag);
 
         System.out.println("get(1) = " + cache.get(1L));
+    }
+
+    private static void testUserKeys() {
+        NamedCache cache = CacheFactory.getCache("UserKeys");
+
+        long t0 = System.nanoTime();
+        Object result = cache.get(1L); // dummy key, not used in loader
+        long t1 = System.nanoTime();
+
+        System.out.println("#1 Keys load time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("result = " + result);
+
+        t0 = System.nanoTime();
+        result = cache.get(1L); // dummy key, not used in loader
+        t1 = System.nanoTime();
+
+        // second try while keys in local cache
+        System.out.println("#2 Keys load time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("result = " + result);
+
+        // expire local cache
+        try {
+            Thread.sleep(10*1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // third try while keys in remote cache
+        t0 = System.nanoTime();
+        result = cache.get(1L); // dummy key, not used in loader
+        t1 = System.nanoTime();
+
+        System.out.println("#3 Keys load time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("result = " + result);
+
     }
 
     private static void testCache2() {

@@ -15,6 +15,17 @@
         </cache-mapping>
 
         <cache-mapping>
+            <cache-name>UserKeys</cache-name>
+            <scheme-name>near</scheme-name>
+            <init-params>
+                <init-param>
+                    <param-name>expiry-delay</param-name>
+                    <param-value>5s</param-value>
+                </init-param>
+            </init-params>
+        </cache-mapping>
+
+        <cache-mapping>
             <cache-name>Departments</cache-name>
             <scheme-name>near</scheme-name>
         </cache-mapping>
@@ -32,7 +43,7 @@
             <front-scheme>
                 <local-scheme>
                     <scheme-name>LocalMemoryScheme</scheme-name>
-                    <expiry-delay>5m</expiry-delay>
+                    <expiry-delay>{expiry-delay 5m}</expiry-delay>
                 </local-scheme>
             </front-scheme>
             <back-scheme>
