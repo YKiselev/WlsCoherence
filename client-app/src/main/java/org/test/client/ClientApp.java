@@ -4,10 +4,14 @@ import com.tangosol.net.CacheFactory;
 import com.tangosol.net.InvocationService;
 import com.tangosol.net.NamedCache;
 import com.tangosol.net.Service;
+import org.test.UserKeyOperations;
 import org.test.invocable.ItemOperation;
 import org.test.pof.Department;
 import org.test.invocable.MyInvocable1;
+import org.test.pof.GetAllKey;
+import org.test.pof.SurrogateKey;
 import org.test.pof.UserPO;
+import org.test.utils.SurrogateKeyBuilder;
 import org.test.vo.ManagerVO;
 
 import javax.security.auth.Subject;
@@ -143,15 +147,17 @@ public class ClientApp {
     private static void testUserKeys() {
         NamedCache cache = CacheFactory.getCache("UserKeys");
 
+        final SurrogateKey getAllKey = SurrogateKeyBuilder.create(UserKeyOperations.ALL).build();
+
         long t0 = System.nanoTime();
-        Object result = cache.get(1L); // dummy key, not used in loader
+        Object result = cache.get(getAllKey);
         long t1 = System.nanoTime();
 
         System.out.println("#1 Keys load time: " + (t1 - t0) / 1000000L + " ms");
         System.out.println("result = " + result);
 
         t0 = System.nanoTime();
-        result = cache.get(1L); // dummy key, not used in loader
+        result = cache.get(getAllKey);
         t1 = System.nanoTime();
 
         // second try while keys in local cache
@@ -159,18 +165,26 @@ public class ClientApp {
         System.out.println("result = " + result);
 
         // expire local cache
-        try {
-            Thread.sleep(10*1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(7*1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // third try while keys in remote cache
+//        t0 = System.nanoTime();
+//        result = cache.get(getAllKey);
+//        t1 = System.nanoTime();
+//
+//        System.out.println("#3 Keys load time: " + (t1 - t0) / 1000000L + " ms");
+//        System.out.println("result = " + result);
 
-        // third try while keys in remote cache
+        final SurrogateKey getByName = SurrogateKeyBuilder.create(UserKeyOperations.BY_NAME).add("firstName", "Max").build();
         t0 = System.nanoTime();
-        result = cache.get(1L); // dummy key, not used in loader
+        result = cache.get(getByName);
         t1 = System.nanoTime();
 
-        System.out.println("#3 Keys load time: " + (t1 - t0) / 1000000L + " ms");
+        System.out.println("#4 Keys load time: " + (t1 - t0) / 1000000L + " ms");
         System.out.println("result = " + result);
 
     }

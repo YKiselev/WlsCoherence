@@ -13,17 +13,31 @@ import java.util.*;
 public class SurrogateKey implements PortableObject {
 
     private static final Object[] EMPTY = new Object[0];
+    public static final int POF_OPERATION = 0;
+    public static final int POF_PAIRS = 1;
 
-    private transient Object[] pairs;
+    private String operation;
+    private Object[] pairs;
+
+    public <E extends Enum<E>> E getOperation(Class<E> enumClass) {
+        return Enum.valueOf(enumClass, operation);
+    }
+
+    public String getOperation() {
+        return operation;
+    }
 
     public SurrogateKey() {
     }
 
-    public SurrogateKey(Object[] pairs) {
+    public SurrogateKey(String operation, Object[] pairs) {
+        this.operation = operation;
         this.pairs = pairs;
     }
 
-    public SurrogateKey(Map<String, Object> source) {
+    public SurrogateKey(String operation, Map<String, Object> source) {
+        this.operation = operation;
+
         final int count = source.size();
 
         pairs = new Object[2 * count];
@@ -53,7 +67,8 @@ public class SurrogateKey implements PortableObject {
 
     @Override
     public void readExternal(PofReader pofReader) throws IOException {
-        pairs = pofReader.readObjectArray(0, null);
+        operation = pofReader.readString(POF_OPERATION);
+        pairs = pofReader.readObjectArray(POF_PAIRS, null);
         if (pairs == null) {
             pairs = EMPTY;
         }
@@ -61,7 +76,8 @@ public class SurrogateKey implements PortableObject {
 
     @Override
     public void writeExternal(PofWriter pofWriter) throws IOException {
-        pofWriter.writeObjectArray(0, pairs);
+        pofWriter.writeString(POF_OPERATION, operation);
+        pofWriter.writeObjectArray(POF_PAIRS, pairs);
     }
 
     private static boolean equals(Object a, Object b) {
@@ -74,7 +90,7 @@ public class SurrogateKey implements PortableObject {
         if (a instanceof Object[]) {
             return b instanceof Object[] && Arrays.equals((Object[]) a, (Object[]) b);
         }
-        return false;
+        return a.equals(b);
     }
 
     @Override
@@ -93,6 +109,10 @@ public class SurrogateKey implements PortableObject {
             return false;
         }
 
+        if (!equals(operation, that.operation)) {
+            return false;
+        }
+
         for (int i = 0; i < count; i++) {
             if (!equals(pairs[i], thatPairs[i])) {
                 return false;
@@ -105,6 +125,10 @@ public class SurrogateKey implements PortableObject {
     @Override
     public int hashCode() {
         int code = 1;
+
+        if (operation != null) {
+            code = 31 * code + operation.hashCode();
+        }
 
         for (Object v : pairs) {
             if (v instanceof Object[]) {
